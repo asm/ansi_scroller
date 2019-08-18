@@ -1,0 +1,39 @@
+version: '3'
+services:
+  head_0:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    environment:
+      - DISPLAY=:0
+      - LCD_NUMBER=0
+
+  head_1:
+    build: .
+    ports:
+      - "5001:5001"
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    environment:
+      - DISPLAY=:0
+      - LCD_NUMBER=1
+  head_2:
+    build: .
+    ports:
+      - "5002:5002"
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    environment:
+      - DISPLAY=:0
+      - LCD_NUMBER=2
+  head_3:
+    build: .
+    ports:
+      - "5003:5003"
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    environment:
+      - DISPLAY=:0
+      - LCD_NUMBER=3
