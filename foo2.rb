@@ -110,7 +110,6 @@ class AnsiDisplay
       @out_q = bq
 
       cb = Proc.new do |msg|
-        puts "got #{msg}"
         @offset = msg
         @in_q.pop &cb
         render_line
