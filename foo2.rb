@@ -103,7 +103,7 @@ end
 
 class AnsiDisplay
   def initialize(aq, bq = nil)
-    @offset = 29
+    @offset = ART_HEIGHT
 
     if bq
       @in_q = aq
@@ -181,7 +181,9 @@ class AnsiDisplay
 
   # Copy the working surface to the renderer
   def render_surface
-    @renderer.copy(@renderer.create_texture_from(@surface), nil, nil)
+    texture = @renderer.create_texture_from(@surface)
+    @renderer.copy(texture, nil, nil)
+    texture.destroy
   end
 
   def advance
