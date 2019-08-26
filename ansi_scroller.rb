@@ -135,6 +135,8 @@ class AnsiDisplay
     SDL2.init(SDL2::INIT_VIDEO)
     SDL2::TTF.init
 
+    SDL2::Mouse::Cursor.hide
+
     window = SDL2::Window.create('lol art',
                                  SDL2::Window::POS_CENTERED, SDL2::Window::POS_CENTERED,
                                  800, 600, 0)
