@@ -93,7 +93,7 @@ def boot_ansi_server
     EventMachine.run do
       Signal.trap('INT') { EventMachine.stop }
       Signal.trap('TERM') { EventMachine.stop }
-      EventMachine.start_server("0.0.0.0", 1337, AnsiServer)
+      EventMachine.start_server('0.0.0.0', 1337, AnsiServer)
     end
   end
 end
@@ -214,7 +214,7 @@ def boot_tail
         lcds[result[:params]['LOCATION'].to_i] = result[:address]
       end
     else
-      puts "no result"
+      puts 'no result'
     end
 
     if lcds[0]
@@ -234,13 +234,13 @@ end
 
 
 if LCD_NUMBER == 0
-  puts "Booting head"
+  puts 'Booting head'
 
   boot_ssdp_server
 
   EventMachine.run do
     out_q = EventMachine::Queue.new
-    EventMachine.start_server("0.0.0.0", 1337, AnsiServer, out_q)
+    EventMachine.start_server('0.0.0.0', 1337, AnsiServer, out_q)
 
     ansi_display = AnsiDisplay.new(out_q: out_q)
     ansi_display.render_init
@@ -251,6 +251,6 @@ if LCD_NUMBER == 0
     end
   end
 else
-  puts "Booting tail"
+  puts 'Booting tail'
   boot_tail
 end
