@@ -47,16 +47,22 @@ def boot_ssdp_server
   producer = SSDP::Producer.new(notifier: true)
   producer.add_service('ansi', {'AL': 'lol', 'LOCATION': LCD_NUMBER})
   producer.start
-
-  return producer
 end
 
 class AnsiServer < EM::Connection
+  @@screens = []
+
   def initialize(q)
     @queue = q
 
     cb = Proc.new do |msg|
-      send_data(msg.to_s + ',')
+      @@screens.each do |screen|
+        begin
+          screen.send_data(msg.to_s + ',')
+        rescue
+          @screens.delete(self)
+        end
+      end
       q.pop &cb
     end
 
@@ -64,11 +70,11 @@ class AnsiServer < EM::Connection
   end
 
   def post_init
-    puts 'someone connected'
+    @@screens << self
   end
 
   def unbind
-    puts 'someone disconnected'
+    @@screens.delete(self)
   end
 end
 
@@ -77,16 +83,8 @@ class AnsiClient < EM::Connection
     @queue = q
   end
 
-  def post_init
-    puts 'connected'
-  end
-
   def receive_data(data)
     @queue.push(data.split(',').last.to_i)
-  end
-
-  def unbind
-    puts 'disconnected'
   end
 end
 
@@ -102,28 +100,25 @@ end
 
 
 class AnsiDisplay
-  def initialize(aq, bq = nil)
+  def initialize(in_q: nil, out_q: nil)
     @offset = ART_HEIGHT
 
-    if bq
-      @in_q = aq
-      @out_q = bq
+    @in_q = in_q
+    @out_q = out_q
 
+    if in_q
       cb = Proc.new do |msg|
-        @offset = msg
+        @offset = msg + ART_HEIGHT + ART_HEIGHT * (LCD_NUMBER)
         @in_q.pop &cb
         render_line
       end
 
       @in_q.pop &cb
-    else
-      @out_q = aq
     end
   end
 
   def render_init
     ansi_file = File.open('blocktronics_acid_trip.bin', 'rb')
-    #ansi_file = File.open('test.bin', 'rb')
     ansi_bytes = ansi_file.read
     ansi_file.close
     @ansi_file_size = ansi_bytes.size
@@ -178,8 +173,6 @@ class AnsiDisplay
     return row_surface
   end
 
-  #48.3
-
   # Copy the working surface to the renderer
   def render_surface
     texture = @renderer.create_texture_from(@surface)
@@ -202,63 +195,62 @@ class AnsiDisplay
     SDL2::Surface.blit(row_surface , nil, @surface, SDL2::Rect.new(0, CHAR_HEIGHT * (ART_HEIGHT-1), SURFACE_WIDTH, CHAR_HEIGHT))
     row_surface.destroy
     render_surface
-    @out_q.push(@offset - ART_HEIGHT)
+    @out_q && @out_q.push(@offset - ART_HEIGHT)
     @renderer.present
   end
 end
 
 def boot_tail
   lcds = {}
-
   while true do
-    puts 'Searching for LCDs...'
+    puts 'Searching for head LCD...'
     finder = SSDP::Consumer.new(timeout: 3)
     results = finder.search(service: 'ansi')
 
+    # TODO: clean this up
     if results
       for result in results do
-        puts "found lcd number #{result[:params]['LOCATION']}"
+        puts "Found lcd number #{result[:params]['LOCATION']}"
         lcds[result[:params]['LOCATION'].to_i] = result[:address]
       end
     else
       puts "no result"
     end
 
-    if lcds[LCD_NUMBER - 1]
+    if lcds[0]
       break
     end
   end
 
-  target = LCD_NUMBER - 1
-  puts "connecting to lcd ##{target} at #{lcds[target]}"
+  puts "Connecting to head LCD at #{lcds[0]}"
   EventMachine.run do
-    out_q = EventMachine::Queue.new
     in_q = EventMachine::Queue.new
-    EventMachine.start_server("0.0.0.0", 1337, AnsiServer, out_q)
-    EventMachine.connect(lcds[target], 1337, AnsiClient, in_q)
+    EventMachine.connect(lcds[0], 1337, AnsiClient, in_q)
 
-    ansi_display = AnsiDisplay.new(in_q, out_q)
+    ansi_display = AnsiDisplay.new(in_q: in_q)
     ansi_display.render_init
   end
 end
 
-boot_ssdp_server
 
 if LCD_NUMBER == 0
-  puts "booting head"
+  puts "Booting head"
+
+  boot_ssdp_server
+
   EventMachine.run do
     out_q = EventMachine::Queue.new
     EventMachine.start_server("0.0.0.0", 1337, AnsiServer, out_q)
-    ansi_display = AnsiDisplay.new(out_q)
+
+    ansi_display = AnsiDisplay.new(out_q: out_q)
     ansi_display.render_init
 
-    timer = EventMachine::PeriodicTimer.new(0.3) do
+    EventMachine::PeriodicTimer.new(0.3) do
       ansi_display.render_line
       ansi_display.advance
     end
   end
 else
-  puts "booting tail"
+  puts "Booting tail"
   boot_tail
 end
-
