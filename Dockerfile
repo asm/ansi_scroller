@@ -24,6 +24,4 @@ COPY ansi_scroller.rb *.bin *.ttf /opt/ansi_scroller/
 
 WORKDIR /opt/ansi_scroller
 
-ARG LCD_NUMBER=0
-ENV LCD_NUMBER=$LCD_NUMBER
 CMD ["ruby", "ansi_scroller.rb"]

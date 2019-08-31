@@ -183,6 +183,7 @@ class AnsiDisplay
   def advance
     @offset += 1
     @offset = 0 if @offset * ART_WIDTH * 2 > @ansi_file_size
+    @out_q && @out_q.push(@offset)
   end
 
   # Renders a line at the bottom
@@ -195,7 +196,6 @@ class AnsiDisplay
     SDL2::Surface.blit(row_surface , nil, @surface, SDL2::Rect.new(0, CHAR_HEIGHT * (ART_HEIGHT-1), SURFACE_WIDTH, CHAR_HEIGHT))
     row_surface.destroy
     render_surface
-    @out_q && @out_q.push(@offset - ART_HEIGHT)
     @renderer.present
   end
 end
