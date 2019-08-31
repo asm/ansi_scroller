@@ -108,7 +108,7 @@ class AnsiDisplay
 
     if in_q
       cb = Proc.new do |msg|
-        @offset = msg + ART_HEIGHT + ART_HEIGHT * (LCD_NUMBER)
+        @offset = msg - ART_HEIGHT * LCD_NUMBER
         @in_q.pop &cb
         render_line
       end
