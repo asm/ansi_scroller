@@ -108,7 +108,7 @@ class AnsiDisplay
 
     if in_q
       cb = Proc.new do |msg|
-        @offset = msg + ART_HEIGHT + ART_HEIGHT * (LCD_NUMBER)
+        @offset = msg - ART_HEIGHT * LCD_NUMBER
         @in_q.pop &cb
         render_line
       end
@@ -195,7 +195,7 @@ class AnsiDisplay
     SDL2::Surface.blit(row_surface , nil, @surface, SDL2::Rect.new(0, CHAR_HEIGHT * (ART_HEIGHT-1), SURFACE_WIDTH, CHAR_HEIGHT))
     row_surface.destroy
     render_surface
-    @out_q && @out_q.push(@offset - ART_HEIGHT)
+    @out_q && @out_q.push(@offset)
     @renderer.present
   end
 end
