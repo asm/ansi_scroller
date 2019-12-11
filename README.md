@@ -10,3 +10,11 @@ cd ansi_scroller
 docker build . -t ansi_scroller
 docker run --restart always --privileged --network host --env LCD_NUMBER=$LCD_NUMBER -dt ansi_scroller
 ```
+
+## Development Using Docker
+Quickstart:
+```
+xhost +local:root
+docker-compose up --build
+```
+

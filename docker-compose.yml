@@ -1,10 +1,20 @@
 # Remember to run xhost +local:root
 version: '3'
 services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.linux.server
+    ports:
+      - "4999:4999"
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    environment:
+      - DISPLAY=:0
   head_0:
     build:
       context: .
-      dockerfile: Dockerfile.linux
+      dockerfile: Dockerfile.linux.client
     ports:
       - "5000:5000"
     volumes:
@@ -12,11 +22,10 @@ services:
     environment:
       - DISPLAY=:0
       - LCD_NUMBER=0
-
   head_1:
     build:
       context: .
-      dockerfile: Dockerfile.linux
+      dockerfile: Dockerfile.linux.client
     ports:
       - "5001:5001"
     volumes:
@@ -27,7 +36,7 @@ services:
   head_2:
     build:
       context: .
-      dockerfile: Dockerfile.linux
+      dockerfile: Dockerfile.linux.client
     ports:
       - "5002:5002"
     volumes:
@@ -38,7 +47,7 @@ services:
   head_3:
     build:
       context: .
-      dockerfile: Dockerfile.linux
+      dockerfile: Dockerfile.linux.client
     ports:
       - "5003:5003"
     volumes:
