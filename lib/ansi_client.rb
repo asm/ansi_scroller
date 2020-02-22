@@ -8,14 +8,12 @@ class AnsiClient < EM::Connection
   end
 
   def receive_data(data)
-    begin
-      # TODO: figure out why these failures happen
-      line = JSON.parse(data)
-      return unless line
-      @queue.push(line)
-    rescue JSON::ParserError
-      puts "Failed to parse JSON"
-    end
+    line = JSON.parse(data)
+    return unless line
+
+    @queue.push(line)
+  rescue JSON::ParserError
+    puts 'Failed to parse JSON'
   end
 
   def post_init

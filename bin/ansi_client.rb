@@ -21,25 +21,19 @@ end
 def boot_client
   server_ip = nil
 
-  loop do
+  while server_ip.nil?
     puts 'Searching for server...'
     finder = SSDP::Consumer.new(timeout: 3)
     results = finder.search(service: 'ansi')
 
-    # TODO: clean this up
-    if results
-      results.each do |result|
-        if result[:params]['LOCATION'] == 'server'
-          server_ip = result[:address]
-          puts "Found server at #{server_ip}"
-        end
-      end
-    else
-      puts 'Still searching...'
-    end
+    next unless results
 
-    break if server_ip
+    results.each do |result|
+      server_ip = result[:address] if result[:params]['LOCATION'] == 'server'
+    end
   end
+
+  puts "Found server at #{server_ip}"
 
   EventMachine.run do
     in_q = EventMachine::Queue.new

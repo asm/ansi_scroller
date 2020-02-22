@@ -4,9 +4,8 @@ require 'json'
 class AnsiServer < EM::Connection
   @@screens = []
 
-  def initialize(queue, reader)
+  def initialize(reader)
     @reader = reader
-    pop_queue(queue)
   end
 
   def receive_data(data)
@@ -14,26 +13,20 @@ class AnsiServer < EM::Connection
     puts "Screen #{@screen_idx} connected"
   end
 
-  def pop_queue(q)
-    @queue = q
-
-    cb = proc do |msg|
-      @@screens.each do |screen|
-        begin
-          screen.send_line
-        rescue => e
-          puts e
-          @@screens.delete(self)
-        end
+  def self.tick
+    @@screens.each do |screen|
+      begin
+        screen.send_line
+      rescue => e
+        puts e
+        @@screens.delete(self)
       end
-      q.pop(&cb)
     end
-
-    q.pop(&cb)
   end
 
   def send_line
     return unless @screen_idx
+
     send_data(@reader.build_line(@screen_idx).to_json)
   end
 
