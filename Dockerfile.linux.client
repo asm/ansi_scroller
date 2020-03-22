@@ -1,12 +1,20 @@
 FROM ubuntu:18.04
 
-RUN apt-get update && apt-get install -y ruby ruby-dev libsdl2-dev libsdl2-ttf-dev
-RUN gem install ruby-sdl2 pry ssdp eventmachine
+RUN apt-get update && apt-get install --no-install-recommends -y \
+  ruby \
+  ruby-dev \
+  ruby-eventmachine \
+  libsdl2-dev \
+  libsdl2-ttf-dev \
+  automake libtool && \
+  rm -rf /var/lib/apt/lists/*
+
+RUN gem install --no-ri --no-rdoc ruby-sdl2 ssdp
 
 RUN mkdir -p /opt/ansi_scroller
 COPY bin /opt/ansi_scroller/bin
 COPY lib /opt/ansi_scroller/lib
-COPY *.bin *.ttf /opt/ansi_scroller/
+COPY *.ttf /opt/ansi_scroller/
 
 WORKDIR /opt/ansi_scroller
 CMD ["ruby", "bin/ansi_client.rb"]

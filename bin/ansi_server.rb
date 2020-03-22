@@ -30,7 +30,7 @@ EventMachine.run do
     carousel.reader.advance
   end
 
-  EventMachine::PeriodicTimer.new(60) do
+  EventMachine::PeriodicTimer.new(600) do
     carousel.next
   end
 end

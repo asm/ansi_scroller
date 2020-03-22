@@ -1,12 +1,13 @@
-FROM ubuntu:18.04
+FROM raspbian/stretch
 
-RUN apt-get update && apt-get install --no-install-recommends -y \
+RUN apt-get update && apt-get install -y \
   ruby \
   ruby-dev \
-  ruby-eventmachine && \
+  automake \
+  libtool && \
   rm -rf /var/lib/apt/lists/*
 
-RUN gem install --no-ri --no-rdoc ssdp
+RUN gem install --no-ri --no-rdoc ruby-sdl2 ssdp eventmachine
 
 RUN mkdir -p /opt/ansi_scroller
 COPY bin /opt/ansi_scroller/bin
