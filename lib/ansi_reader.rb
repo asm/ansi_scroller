@@ -21,10 +21,13 @@ class AnsiReader
     15 => [0xFF, 0xFF, 0xFF],
   }.freeze
 
-  def initialize(filename)
+  def initialize(filename: nil, bytes: nil)
     @filename = filename
+    @bytes = bytes
     @offset = 0
-    read_file
+
+    read_file if @filename
+    read_bytes if @bytes
   end
 
   def advance
@@ -34,13 +37,18 @@ class AnsiReader
 
   def read_file
     ansi_file = File.open(@filename, 'rb')
-    ansi_bytes = ansi_file.read
+    @bytes = ansi_file.read
     ansi_file.close
-    @ansi_file_size = ansi_bytes.size
+
+    read_bytes
+  end
+
+  def read_bytes
+    @ansi_file_size = @bytes.size
     @ansi_lines = @ansi_file_size / (ART_WIDTH * 2)
 
-    @characters = ansi_bytes.chars.select.with_index { |_, i| i.even? }.join.force_encoding('IBM437')
-    @color_codes = ansi_bytes.bytes.select.with_index { |_, i| i.odd? }
+    @characters = @bytes.chars.select.with_index { |_, i| i.even? }.join.force_encoding('IBM437')
+    @color_codes = @bytes.bytes.select.with_index { |_, i| i.odd? }
   end
 
   def build_line(lcd_number)

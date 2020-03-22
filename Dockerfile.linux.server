@@ -8,7 +8,5 @@ COPY bin /opt/ansi_scroller/bin
 COPY lib /opt/ansi_scroller/lib
 COPY *.bin *.ttf /opt/ansi_scroller/
 
-
 WORKDIR /opt/ansi_scroller
-
 CMD ["ruby", "bin/ansi_server.rb"]

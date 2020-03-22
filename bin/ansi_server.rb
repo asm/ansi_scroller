@@ -4,30 +4,33 @@ $LOAD_PATH << File.expand_path('../lib', __dir__)
 
 require 'ssdp'
 require 'eventmachine'
+require 'net/http'
+require 'json'
+
 require 'ansi_server'
 require 'ansi_reader'
+require 'url_carousel'
 
 STDOUT.sync = true
 
-
-# TODO: args
-SCROLL_DELAY = 300
-
-def boot_ssdp_server
-  producer = SSDP::Producer.new(notifier: true)
-  producer.add_service('ansi', 'AL': 'lol', 'LOCATION': 'server')
-  producer.start
-end
+# TODO: args?
 
 puts 'Booting server'
-boot_ssdp_server
+producer = SSDP::Producer.new(notifier: true)
+producer.add_service('ansi', 'AL': 'lol', 'LOCATION': 'server')
+producer.start
+
+carousel = UrlCarousel.new('http://asm.dj/ansi/index.json')
 
 EventMachine.run do
-  reader = AnsiReader.new('blocktronics_acid_trip.bin')
-  EventMachine.start_server('0.0.0.0', 1337, AnsiServer, reader)
+  EventMachine.start_server('0.0.0.0', 1337, AnsiServer, carousel)
 
   EventMachine::PeriodicTimer.new(0.3) do
     AnsiServer.tick
-    reader.advance
+    carousel.reader.advance
+  end
+
+  EventMachine::PeriodicTimer.new(60) do
+    carousel.next
   end
 end
