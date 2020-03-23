@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y \
   libtool && \
   rm -rf /var/lib/apt/lists/*
 
-RUN gem install --no-ri --no-rdoc ruby-sdl2 ssdp eventmachine
+RUN gem install --no-ri --no-rdoc ssdp eventmachine
 
 RUN mkdir -p /opt/ansi_scroller
 COPY bin /opt/ansi_scroller/bin
