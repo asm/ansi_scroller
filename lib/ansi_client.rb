@@ -2,12 +2,14 @@ require 'eventmachine'
 require 'json'
 
 class AnsiClient < EM::Connection
-  def initialize(q, screen_idx)
-    @queue = q
+  include EM::P::LineProtocol
+
+  def initialize(queue, screen_idx)
+    @queue = queue
     @screen_idx = screen_idx
   end
 
-  def receive_data(data)
+  def receive_line(data)
     line = JSON.parse(data)
     return unless line
 

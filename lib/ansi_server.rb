@@ -27,7 +27,7 @@ class AnsiServer < EM::Connection
   def send_line
     return unless @screen_idx
 
-    send_data(@reader.build_line(@screen_idx).to_json)
+    send_data(@reader.build_line(@screen_idx).to_json + "\n")
   end
 
   def post_init
