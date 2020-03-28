@@ -19,7 +19,8 @@ class AnsiServer < EM::Connection
         screen.send_line
       rescue => e
         puts e
-        @@screens.delete(self)
+        screen.close_connection
+        @@screens.delete(screen)
       end
     end
   end

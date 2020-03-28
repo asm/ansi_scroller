@@ -16,6 +16,7 @@ class AnsiClient < EM::Connection
     @queue.push(line)
   rescue JSON::ParserError
     puts 'Failed to parse JSON'
+    reconnect(@options[:host], @options[:port])
   end
 
   def post_init
