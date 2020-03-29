@@ -17,8 +17,6 @@ class AnsiClient < EM::Connection
   end
 
   def post_init
-    @server_port, @server_ip = Socket.unpack_sockaddr_in(get_peername)
-    puts "Connected to server at #{@server_ip}:#{@server_port}"
     send_data(@screen_idx)
   end
 
