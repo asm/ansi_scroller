@@ -2,6 +2,7 @@ require 'eventmachine'
 require 'json'
 
 class AnsiServer < EM::Connection
+  include EM::P::ObjectProtocol
   @@screens = []
 
   def initialize(reader)
@@ -28,7 +29,7 @@ class AnsiServer < EM::Connection
   def send_line
     return unless @screen_idx
 
-    send_data(@reader.build_line(@screen_idx).to_json + "\n")
+    send_object(@reader.build_line(@screen_idx))
   end
 
   def post_init

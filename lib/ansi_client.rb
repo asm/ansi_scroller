@@ -1,30 +1,29 @@
 require 'eventmachine'
 require 'json'
+require 'socket'
 
 class AnsiClient < EM::Connection
-  include EM::P::LineProtocol
+  include EM::P::ObjectProtocol
 
   def initialize(queue, screen_idx)
     @queue = queue
     @screen_idx = screen_idx
   end
 
-  def receive_line(data)
-    line = JSON.parse(data)
+  def receive_object(line)
     return unless line
 
     @queue.push(line)
-  rescue JSON::ParserError
-    puts 'Failed to parse JSON'
-    EM.add_timer(1){ reconnect(@options[:host], @options[:port]) }
   end
 
   def post_init
+    @server_port, @server_ip = Socket.unpack_sockaddr_in(get_peername)
+    puts "Connected to server at #{@server_ip}:#{@server_port}"
     send_data(@screen_idx)
   end
 
   def unbind
-    puts 'Unbind called, reconnecting...'
-    EM.add_timer(1){ reconnect(@options[:host], @options[:port]) }
+    puts 'Unbind called, exiting.'
+    exit
   end
 end
