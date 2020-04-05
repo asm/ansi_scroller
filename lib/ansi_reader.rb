@@ -60,7 +60,7 @@ class AnsiReader
       # We've hit the sauce info
       break if @characters[idx] == "\x1a"
 
-      color = @color_codes[idx]
+      color = @color_codes[idx] || 0x0 # colors should but don't always exist
       fg_color = color & 0b1111
       bg_color = color >> 4
 

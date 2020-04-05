@@ -44,7 +44,8 @@ class AnsiDisplay
   def render_row(data)
     row_surface = SDL2::Surface.new(SURFACE_WIDTH, CHAR_HEIGHT, 32)
     data.each_with_index do |c, i|
-      char = c[0]
+      char = c[0] || " "
+      char = " " if char == "\u0000"
       fg_color = c[1]
       bg_color = c[2]
       char_surface = @font.render_shaded(char, fg_color, bg_color)
