@@ -17,11 +17,12 @@ cd ansi_scroller
 docker build -f Dockerfile.server . -t ansi_scroller_server
 docker run --restart always --privileged --network host -dt ansi_scroller_server
 
-# On all clients:
+# On all clients (be sure to set the LCD_NUMBER to something between 0 and the number of screens - 1):
 docker build -f Dockerfile.client . -t ansi_scroller_client
+export LCD_NUMBER=xxx
 docker run --restart always --privileged --network host --env LCD_NUMBER -dt ansi_scroller_client
 ```
-`--restart always` will run the Docker containers at boot, perfect for art installtions.  The clients will auto-discover the server via [SSDP](https://en.wikipedia.org/wiki/Simple_Service_Discovery_Protocol) so there's no config necessary as long as they're on the same network.  Running a client and server on the same node is supported.
+`--restart always` will run the Docker containers at boot, perfect for art installtions.  The clients will auto-discover the server via [SSDP](https://en.wikipedia.org/wiki/Simple_Service_Discovery_Protocol) so there's no config necessary (other than setting the screen number) as long as they're on the same network.  Running a client and server on the same node is supported.  You might consider setting the screen number in `/etc/profile` to make it permanent.
 
 ## Loading your own art
 The server loads a list of ANSI artworks to display from a JSON list via a URL.  You can change that URL [here](https://github.com/asm/ansi_scroller/blob/master/bin/ansi_server.rb#L23).  You'll note the files are in the `.bin` format (not `.ans`).  This format is far easier to read and you can use [PabloDraw](http://picoe.ca/products/pablodraw/) to convert artwork.  Someday, I'll write the code necessary to read `.ans` files.
