@@ -8,9 +8,11 @@ On each Raspberry Pi, you'll need to run the following:
 
 ```bash
 # This version of docker is the only one that seems to work on RPis at the moment
-curl -fsSL https://get.docker.com | VERSION=18.06.3 sh
+curl -fsSL https://get.docker.com | sh
+sudo usermod -aG docker pi
+# Log out/log in again to pick up new group
 sudo apt install -y git
-git clone git@github.com:asm/ansi_scroller.git
+git clone https://github.com/asm/ansi_scroller.git
 cd ansi_scroller
 
 # On the server:
