@@ -19,7 +19,8 @@ cd ansi_scroller
 docker build -f Dockerfile.server . -t ansi_scroller_server
 docker run --restart always --privileged --network host -dt ansi_scroller_server
 
-# On all clients (be sure to set the LCD_NUMBER to something between 0 and the number of screens - 1):
+# On all clients (be sure to set the LCD_NUMBER to something between 0 and the number of screens - 1)
+# Where LCD_NUMBER=0 is located at the bottom of the stack:
 docker build -f Dockerfile.client . -t ansi_scroller_client
 export LCD_NUMBER=xxx
 docker run --restart always --privileged --network host --env LCD_NUMBER -dt ansi_scroller_client
