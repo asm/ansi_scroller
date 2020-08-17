@@ -8,6 +8,7 @@ class AnsiClient < EM::Connection
   def initialize(queue, screen_idx)
     @queue = queue
     @screen_idx = screen_idx
+    set_comm_inactivity_timeout(1)
   end
 
   def receive_object(line)
