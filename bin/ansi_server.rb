@@ -16,9 +16,9 @@ STDOUT.sync = true
 # TODO: args?
 
 puts 'Booting server'
-producer = SSDP::Producer.new(notifier: true)
+producer = SSDP::Producer.new()
 producer.add_service('ansi', 'AL': 'lol', 'LOCATION': 'server')
-producer.start
+thread = producer.start
 
 carousel = UrlCarousel.new('http://asm.dj/ansi/index.json')
 
@@ -32,5 +32,18 @@ EventMachine.run do
 
   EventMachine::PeriodicTimer.new(600) do
     carousel.next
+  end
+
+  EventMachine::PeriodicTimer.new(1) do
+    # This happens when the wifi radio bonks
+    begin
+      if not thread.alive?
+        puts 'restarting SSDP thread'
+        producer.stop(false) # false -> no bye bye
+        thread = producer.start
+      end
+    rescue => e
+      puts 'Caught: ' + e.message
+    end
   end
 end

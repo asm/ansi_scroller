@@ -20,27 +20,39 @@ end
 
 def boot_client
   server_ip = nil
+  finder = SSDP::Consumer.new(timeout: 3, first_only: true)
 
   while server_ip.nil?
     puts 'Searching for server...'
-    finder = SSDP::Consumer.new(timeout: 3)
-    results = finder.search(service: 'ansi')
 
-    next unless results
+    begin
+      result = finder.search(service: 'ansi')
 
-    results.each do |result|
+      next unless result
+
       server_ip = result[:address] if result[:params]['LOCATION'] == 'server'
+    rescue => e
+      puts 'Caught: ' + e.message
+      sleep(1)
     end
   end
 
   puts "Found server at #{server_ip}"
 
+  connection = nil
   EventMachine.run do
     in_q = EventMachine::Queue.new
-    EventMachine.connect(server_ip, 1337, AnsiClient, in_q, LCD_NUMBER)
+    connection = EventMachine.connect(server_ip, 1337, AnsiClient, in_q, LCD_NUMBER)
 
     ansi_display = AnsiDisplay.new(in_q: in_q)
     ansi_display.render_init
+
+    EventMachine::PeriodicTimer.new(1) do
+      # This happens when the wifi radio bonks
+      if connection.dead
+        connection = EventMachine.connect(server_ip, 1337, AnsiClient, in_q, LCD_NUMBER)
+      end
+    end
   end
 end
 

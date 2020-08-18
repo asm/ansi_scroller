@@ -3,9 +3,11 @@ require 'json'
 require 'socket'
 
 class AnsiClient < EM::Connection
+  attr_reader :dead
   include EM::P::ObjectProtocol
 
   def initialize(queue, screen_idx)
+    @dead = false
     @queue = queue
     @screen_idx = screen_idx
     set_comm_inactivity_timeout(1)
@@ -22,7 +24,7 @@ class AnsiClient < EM::Connection
   end
 
   def unbind
-    puts 'Unbind called, exiting.'
-    exit
+    puts 'Unbind called'
+    @dead = true
   end
 end
