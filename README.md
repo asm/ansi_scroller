@@ -28,6 +28,14 @@ docker run --restart always --privileged --network host --env LCD_NUMBER -dt ans
 ```
 `--restart always` will run the Docker containers at boot, perfect for art installations.  The clients will auto-discover the server via [SSDP](https://en.wikipedia.org/wiki/Simple_Service_Discovery_Protocol) so there's no config necessary (other than setting the screen number) as long as they're on the same network.  Running a client and server on the same node is supported.  You might consider setting the screen number in `/etc/profile` to make it permanent.
 
+### Scheduling Screen Power
+You can power down/up your screens on a schedule using `cron` and `vcgencmd` (RPi only).  For example, to power down at 10pm and up again at 8am (be sure to check your timezone), simply run `crontab -e` and append:
+
+```
+0 22 * * * vcgencmd display_power 0
+0 08 * * * vcgencmd display_power 1
+```
+
 ## Loading your own art
 The server loads a list of ANSI artworks to display from a JSON list via a URL.  You can change that URL [here](https://github.com/asm/ansi_scroller/blob/master/bin/ansi_server.rb#L23).  You'll note the files are in the `.bin` format (not `.ans`).  This format is far easier to read and you can use [PabloDraw](http://picoe.ca/products/pablodraw/) to convert artwork.  Someday, I'll write the code necessary to read `.ans` files.
 
