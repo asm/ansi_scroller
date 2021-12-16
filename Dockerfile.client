@@ -12,13 +12,14 @@ RUN apt-get update && apt-get install -y ruby \
   libwebp-dev \
   freeglut3-dev \
   libjpeg-dev \
-  wget \
+  curl \
+  ca-certificates \
   libraspberrypi-dev && \
   rm -rf /var/lib/apt/lists/*
 
 WORKDIR /tmp
-RUN wget https://www.libsdl.org/release/SDL2-2.0.10.tar.gz
-RUN wget http://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-2.0.14.tar.gz
+RUN curl -O https://www.libsdl.org/release/SDL2-2.0.10.tar.gz
+RUN curl -O http://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-2.0.14.tar.gz
 
 RUN tar zxf SDL2-2.0.10.tar.gz
 RUN tar zxf SDL2_ttf-2.0.14.tar.gz
