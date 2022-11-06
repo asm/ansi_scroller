@@ -50,7 +50,7 @@ sudo rm -rf /var/lib/docker/runtimes
 # Run raspi-config and enable overlayfs and read only /boot in "Performance Options", then reboot
 sudo raspi-config
 ```
-At this point, no changes you make to will survive a reboot. To make changes, just run `raspi-config` again and disable overlayfs.  More details on getting Docker working on OverlayFS can be found [here](https://github.com/docker/for-linux/issues/230#issuecomment-1035642872).
+At this point, no file changes will survive a reboot. To make changes, just run `raspi-config` again and disable overlayfs.  More details on getting Docker working on OverlayFS can be found [here](https://github.com/docker/for-linux/issues/230#issuecomment-1035642872).
 
 ## Loading your own art
 The server loads a list of ANSI artworks to display from a JSON list via a URL.  You can change that URL [here](https://github.com/asm/ansi_scroller/blob/master/bin/ansi_server.rb#L23).  You'll note the files are in the `.bin` format (not `.ans`).  This format is far easier to read and you can use [PabloDraw](http://picoe.ca/products/pablodraw/) to convert artwork.  Someday, I'll write the code necessary to read `.ans` files.
