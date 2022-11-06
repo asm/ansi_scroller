@@ -37,9 +37,9 @@ SD cards are notorious for corrupting filesystems, usually due to excessive or d
 ```bash
 sudo apt install -y fuse-overlayfs
 # This will overwrite your docker config, be sure to check if this file exists
-echo "{
+echo '{
   "storage-driver": "fuse-overlayfs"
-}" > /etc/docker/daemon.json
+}' | sudo tee /etc/docker/daemon.json
 # Restart docker to pick up the changes
 sudo service docker restart
 # Start the client (if you haven't already)
